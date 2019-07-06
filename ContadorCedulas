@@ -1,0 +1,119 @@
+import java.util.Scanner;
+
+public class Main {
+    public static Integer[] cedula            = {2,5,10,20,50,100}; // cédulas possíveis, em ordem crescente
+    public static Integer[] quantidadeCedulas = new Integer[cedula.length]; // array resposta
+    public static Integer valorSolicitado;
+    public static Integer sobra = valorSolicitado;
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        for(int i=0;i<cedula.length;i++){
+            quantidadeCedulas[i]=0;
+        }
+
+        do{
+            System.out.println("Digite um valor inteiro (ou -1 para sair): ");
+            valorSolicitado = sc.nextInt();
+
+            if(valorSolicitado>-1){
+
+            if (valorSolicitado < cedula[0]) {
+                System.out.println("O valor solicitado é inferior à menor nota disponível. Não há como atender à solicitação");
+                System.out.println();
+            } else {
+                sobra = valorSolicitado;
+
+                for (int i = (cedula.length - 1); i >= 0; i--) {
+                    if (sobra >= cedula[i]) {
+                        quantidadeCedulas[i] = Integer.valueOf((int) Math.floor(sobra / cedula[i]));
+                        sobra -= quantidadeCedulas[i] * cedula[i];
+                    } else {
+                        quantidadeCedulas[i] = 0;
+                    }
+                }
+
+                exibirCedulas();
+
+                while (sobra > 0 && refazerProcesso()) {
+                    exibirCedulas();
+                }
+
+            }
+            exibirRespostaFinal();
+            }else{
+                System.out.println("Até Logo !!!!");
+            }
+        }while(valorSolicitado>-1);
+
+    }
+
+    public static Boolean refazerProcesso(){
+        Boolean temReserva = false;
+
+        for(int i=0;i<quantidadeCedulas.length;i++){
+            if(quantidadeCedulas[i]>0){
+                temReserva = true;
+                break;
+            }
+        }
+
+        if(temReserva){
+            for (int j = 0; j < quantidadeCedulas.length; j++) {
+                if (quantidadeCedulas[j] > 0) {
+                    quantidadeCedulas[j]--;
+                    sobra = sobra + cedula[j];
+
+                    for (int i = j - 1; i >= 0; i--) {
+                        if (sobra >= cedula[i]) {
+                            quantidadeCedulas[i] = Integer.valueOf((int) Math.floor(sobra / cedula[i]));
+                            sobra -= quantidadeCedulas[i] * cedula[i];
+                        } else {
+                            quantidadeCedulas[i] = 0;
+                        }
+
+                    }
+                    break;
+                }
+            }
+        }else{
+            System.out.println("Impossível atender à solicitação com as notas disponíveis.");
+            System.out.println();
+            System.out.println();
+            return false;
+        }
+        return true;
+    }
+
+    public static void exibirCedulas(){
+        for (int i = quantidadeCedulas.length - 1; i >= 0; i--) {
+            System.out.println(cedula[i] + " = " + quantidadeCedulas[i]);
+        }
+        System.out.println("--> sobra = " + sobra);
+        System.out.println();
+        System.out.println();
+    }
+
+    public static void exibirRespostaFinal(){
+        int numeroMinimoCedulas = 0;
+
+        for(int i = 0;i<quantidadeCedulas.length;i++){
+            numeroMinimoCedulas += quantidadeCedulas[i];
+        }
+
+        if(numeroMinimoCedulas==0){
+            System.out.println("Impossível atender à solicitação com as notas disponíveis.");
+        }else{
+            System.out.println("Quantidade Mínima de Cédulas para atender à solicitação = " + numeroMinimoCedulas);
+        }
+        System.out.println("-----------------------------------------------------------------------------------");
+        for(int i=cedula.length-1;i>=0;i--) {
+            System.out.println("Cédulas de "+cedula[i]+" = "+quantidadeCedulas[i]);
+        }
+        System.out.println("-----------------------------------------------------------------------------------");
+        System.out.println();
+
+    }
+
+}
